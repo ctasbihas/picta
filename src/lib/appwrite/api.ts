@@ -1,7 +1,6 @@
-// write a function to create user using appwrite and then export it.
 import { INewUser } from "@/types";
-import { account } from "./config";
-import { ID } from "appwrite";
+import { account, appwriteConfig, avatars, databases } from "./config";
+import { ID, Query } from "appwrite";
 
 export async function createUserAccount(user: INewUser) {
 	try {
@@ -11,9 +10,72 @@ export async function createUserAccount(user: INewUser) {
 			user.password,
 			user.name
 		);
-		return newAccount;
+		if (!newAccount) throw Error;
+
+		const avatarUrl = avatars.getInitials(user.name);
+
+		const newUser = await saveUserToDB({
+			accountId: newAccount.$id,
+			name: newAccount.name,
+			email: newAccount.email,
+			username: user.username,
+			imageUrl: avatarUrl,
+		});
+
+		return newUser;
 	} catch (error) {
 		console.error("Error creating user:", error);
 		return error;
+	}
+}
+
+export async function saveUserToDB(user: {
+	accountId: string;
+	email: string;
+	name: string;
+	imageUrl: URL;
+	username: string;
+}) {
+	try {
+		const newUser = await databases.createDocument(
+			appwriteConfig.databaseId,
+			appwriteConfig.userCollectionId,
+			ID.unique(),
+			user
+		);
+
+		return newUser;
+	} catch (error) {
+		console.error("Error saving user:", error);
+	}
+}
+export async function signInAccount(user: { email: string; password: string }) {
+	try {
+		const session = await account.createEmailSession(
+			user.email,
+			user.password
+		);
+
+		return session;
+	} catch (err) {
+		console.log(err);
+	}
+}
+
+export async function getCurrentUser() {
+	try {
+		const currentAccount = await account.get();
+		if (!currentAccount) throw Error;
+
+		const currentUser = await databases.listDocuments(
+			appwriteConfig.databaseId,
+			appwriteConfig.userCollectionId,
+			[Query.equal("accountId", currentAccount.$id)]
+		);
+		if (!currentUser) throw Error;
+
+		return currentUser.documents[0];
+	} catch (err) {
+		console.log(err);
 	}
 }
