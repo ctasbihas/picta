@@ -52,7 +52,7 @@ export default function AuthPrivider({
 					name: currentAccount.name,
 					username: currentAccount.username,
 					email: currentAccount.email,
-					imageUrl: currentAccount.image,
+					imageUrl: currentAccount.imageUrl,
 					bio: currentAccount.bio,
 				});
 				setIsAuthenticated(true);
