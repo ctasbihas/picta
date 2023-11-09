@@ -12,15 +12,15 @@ export default function Bottombar() {
 						key={link.label}
 						to={link.route}
 						className={`${
-							isActive && "bg-primary-500 rounded-[10px]"
-						} flex-center flex-col gap-1 p-2 transition`}
+							isActive && "bg-primary-500"
+						} flex-center flex-col gap-1 py-2 px-4 transition rounded-[10px]`}
 					>
 						<img
 							src={link.imgURL}
 							alt={link.label}
 							className={`${isActive && "invert-white"}`}
-							height={16}
-							width={16}
+							height={20}
+							width={20}
 						/>
 						<p className="tiny-medium text-light-2">{link.label}</p>
 					</Link>
