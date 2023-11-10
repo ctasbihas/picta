@@ -15,18 +15,25 @@ import FileUploader from "../shared/FileUploader";
 import { Input } from "../ui/input";
 import { PostValidation } from "@/lib/validation";
 import { Models } from "appwrite";
-import { useCreatePost } from "@/lib/react-query/queriesAndMutations";
+import {
+	useCreatePost,
+	useUpdatePost,
+} from "@/lib/react-query/queriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
 import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
 
 type PostFormProps = {
 	post?: Models.Document;
+	action: "Create" | "Update";
 };
 
-export default function PostForm({ post }: PostFormProps) {
+export default function PostForm({ post, action }: PostFormProps) {
+	const { mutateAsync: createPost, isPending: isLoadingCreate } =
+		useCreatePost();
+	const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
+		useUpdatePost();
 	const { user } = useUserContext();
-	const { mutateAsync: createPost } = useCreatePost();
 	const { toast } = useToast();
 	const navigate = useNavigate();
 
@@ -41,6 +48,25 @@ export default function PostForm({ post }: PostFormProps) {
 	});
 
 	async function onSubmit(values: z.infer<typeof PostValidation>) {
+		// UpdatePost
+		if (post && action === "Update") {
+			const updatedPost = await updatePost({
+				...values,
+				postId: post.$id,
+				imageId: post?.imageId,
+				imageUrl: post?.imageUrl,
+			});
+
+			if (!updatedPost) {
+				toast({
+					title: "Update failed. Please try again.",
+				});
+			}
+
+			return navigate(`/posts/${post.$id}`);
+		}
+
+		// Create Post
 		const newPost = await createPost({
 			...values,
 			userId: user.id,
@@ -145,8 +171,11 @@ export default function PostForm({ post }: PostFormProps) {
 					<Button
 						type="submit"
 						className="shad-button_primary whitespace-nowrap"
+						disabled={isLoadingCreate || isLoadingUpdate}
 					>
-						Submit
+						{isLoadingCreate || isLoadingUpdate
+							? "Loading..."
+							: `${action} Post`}
 					</Button>
 				</div>
 			</form>
