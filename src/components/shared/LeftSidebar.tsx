@@ -16,6 +16,10 @@ export default function LeftSidebar() {
 		if (isSuccess) navigate(0);
 	}, [isSuccess, navigate]);
 
+	const truncateName = (name: string) => {
+		return name.length > 20 ? `${name.substring(0, 15)}...` : name;
+	};
+
 	return (
 		<nav className="leftsidebar">
 			<div className="flex flex-col gap-11">
@@ -35,13 +39,21 @@ export default function LeftSidebar() {
 					className="flex gap-3 items-center"
 				>
 					<img
-						src={user.imageUrl || "/assets/images/profile.png"}
+						src={user.imageUrl || "/assets/icons/profile-placeholder.svg"}
 						alt="Profile"
 						className="h-14 w-14 rounded-full"
 					/>
 					<div className="flex flex-col">
-						<p className="body-bold">{user.name}</p>
-						<p className="small-regular text-light-3">
+						<p
+							className="body-bold"
+							title={user.name}
+						>
+							{truncateName(user.name)}
+						</p>
+						<p
+							className="small-regular text-light-3"
+							title={user.username}
+						>
 							@{user.username}
 						</p>
 					</div>
