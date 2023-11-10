@@ -1,19 +1,39 @@
 import Loader from "@/components/shared/Loader";
 import PostStats from "@/components/shared/PostStats";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/context/AuthContext";
-import { useGetPostById } from "@/lib/react-query/queriesAndMutations";
+import {
+	useDeletePost,
+	useGetPostById,
+} from "@/lib/react-query/queriesAndMutations";
 import { multiFormatDateString } from "@/lib/utils";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function PostDetails() {
 	const { id } = useParams();
 	const { data: post, isPending } = useGetPostById(id || "");
 	const { user } = useUserContext();
+	const { mutateAsync: deletePost, isPending: isLoadingDelete } =
+		useDeletePost();
+	const navigate = useNavigate();
+	const { toast } = useToast();
 
 	if (!isPending && !post) return <div>Post not found</div>;
 
-	const handleDeletePost = () => {};
+	const handleDeletePost = async () => {
+		const deletedPost = await deletePost({
+			postId: post?.$id || "",
+			imageId: post?.imageId,
+		});
+		if (!deletedPost) {
+			toast({
+				title: "Update failed. Please try again.",
+			});
+		}
+
+		return navigate(`/`);
+	};
 
 	return (
 		<div className="post_details-container">
@@ -76,6 +96,7 @@ export default function PostDetails() {
 										variant="ghost"
 										className="ghost_details-delete_btn"
 										onClick={handleDeletePost}
+										disabled={isLoadingDelete}
 									>
 										<img
 											src="/assets/icons/delete.svg"
