@@ -302,17 +302,17 @@ export async function removeSavedPost(savedRecordId: string) {
 	}
 }
 export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
-	const queris = [Query.orderDesc("$updatedAt"), Query.limit(10)];
+	const queries = [Query.orderDesc("$updatedAt"), Query.limit(9)];
 
 	if (pageParam) {
-		queris.push(Query.cursorAfter(pageParam.toString()));
+		queries.push(Query.cursorAfter(pageParam.toString()));
 	}
 
 	try {
 		const posts = await databases.listDocuments(
 			appwriteConfig.databaseId,
 			appwriteConfig.postCollectionId,
-			queris
+			queries
 		);
 
 		if (!posts) throw Error;

@@ -4,7 +4,7 @@ import PostStats from "./PostStats";
 import { useUserContext } from "@/context/AuthContext";
 
 type GridPostListProps = {
-	posts: Models.Document[];
+	posts: Models.DocumentList<Models.Document> | undefined;
 	showUser?: boolean;
 	showStats?: boolean;
 };
@@ -21,7 +21,7 @@ export default function GridPostList({
 	};
 	return (
 		<ul className="grid-container">
-			{posts.map((post) => (
+			{posts?.documents.map((post: Models.Document) => (
 				<li
 					key={post.$id}
 					className="relative min-w-80 h-80"

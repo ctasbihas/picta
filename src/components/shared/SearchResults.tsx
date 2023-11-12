@@ -3,7 +3,7 @@ import Loader from "./Loader";
 import GridPostList from "./GridPostList";
 
 type SearchResultsProps = {
-	searchedPosts: Models.Document[];
+	searchedPosts: Models.DocumentList<Models.Document> | undefined;
 	isSearchFetching: boolean;
 };
 
@@ -14,7 +14,7 @@ export default function SearchResults({
 	if (isSearchFetching) return <Loader />;
 
 	if (searchedPosts && searchedPosts.documents.length > 0) {
-		return <GridPostList posts={searchedPosts.documents} />;
+		return <GridPostList posts={searchedPosts} />;
 	}
 
 	return (

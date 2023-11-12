@@ -30,10 +30,10 @@ export default function Explore() {
 		);
 	}
 
-	const shouldShowSearchResult = searchValue !== "";
+	const shouldShowSearchResults = searchValue !== "";
 	const shouldShowPosts =
-		!shouldShowSearchResult &&
-		posts.pages.every((item) => item.documents.length === 0);
+		!shouldShowSearchResults &&
+		posts.pages.every((item) => item?.documents.length === 0);
 	return (
 		<div className="explore-container">
 			<div className="explore-inner_container">
@@ -70,7 +70,7 @@ export default function Explore() {
 			</div>
 
 			<div className="flex flex-wrap gap-9 w-full max-w-5xl">
-				{shouldShowSearchResult ? (
+				{shouldShowSearchResults ? (
 					<SearchResults
 						searchedPosts={searchedPosts}
 						isSearchFetching={isSearchFetching}
@@ -82,8 +82,8 @@ export default function Explore() {
 				) : (
 					posts.pages.map((item, index) => (
 						<GridPostList
-							key={index}
-							posts={item.documents}
+							key={`page-${index}`}
+							posts={item}
 						/>
 					))
 				)}

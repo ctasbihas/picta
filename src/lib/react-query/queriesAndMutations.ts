@@ -171,10 +171,14 @@ export const useGetPosts = () => {
 			const lastId =
 				lastPage?.documents[lastPage.documents.length - 1].$id;
 
-			return lastId;
+			const numLastId = Number(lastId);
+
+			return numLastId;
 		},
+		initialPageParam: 0,
 	});
 };
+
 export const useSearchPost = (searchTerm: string) => {
 	return useQuery({
 		queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
